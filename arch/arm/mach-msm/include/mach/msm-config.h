@@ -28,5 +28,5 @@
 #define LIMIT_TEMP_MAX		80  /* default: 51 */
 
 #define CPU_INITIAL_FREQ_MAX	1782000
-#define CPU_INITIAL_FREQ_MIN	384000
+#define CPU_INITIAL_FREQ_MIN	192000
 /* End */
