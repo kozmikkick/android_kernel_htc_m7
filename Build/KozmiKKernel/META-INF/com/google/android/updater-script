@@ -51,10 +51,25 @@ delete_recursive("/system/lib/modules");
 package_extract_dir("modules", "/system/lib/modules");
 set_perm_recursive(0, 0, 0755, 0755, "/system/lib/modules");
 ui_print("");
+ui_print("Extract files...");
+package_extract_dir("kernel", "/tmp");
+set_perm(0, 0, 0777, "/tmp/mkbootimg.sh");
+set_perm(0, 0, 0777, "/tmp/mkbootimg");
+set_perm(0, 0, 0777, "/tmp/unpackbootimg");
+set_perm(0, 0, 0777, "/tmp/busybox");
+
+ui_print("Pull the boot.img from your phone...");
+run_program("/sbin/busybox", "dd", "if=/dev/block/mmcblk0p33", "of=/tmp/boot.img");
+
 ui_print("Extract boot.img...");
-package_extract_file("boot.img", "/tmp/boot.img");
-run_program("/sbin/busybox", "dd", "if=/tmp/boot.img", "of=/dev/block/mmcblk0p33");
-delete("/tmp/boot.img");
+run_program("/tmp/unpackbootimg", "-i", "/tmp/boot.img", "-o", "/tmp/");
+
+ui_print("Installing kernel...");
+run_program("/tmp/mkbootimg.sh");
+
+ui_print("Flashing New boot.img...");
+run_program("/sbin/busybox", "dd", "if=/tmp/newboot.img", "of=/dev/block/mmcblk0p33");
+
 unmount("/system");
 ui_print("");
 ui_print("");
